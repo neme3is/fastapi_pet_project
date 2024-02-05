@@ -1,4 +1,5 @@
 from sqlalchemy import create_engine
+from sqlalchemy_utils import database_exists, create_database
 
 
 class DbSessionManager:
@@ -8,9 +9,14 @@ class DbSessionManager:
     DB_NAME = "fast_api_db"
 
     @staticmethod
-    def create_session_obj():
+    def create_engine():
         engine = \
             create_engine(f"postgresql+psycopg2://{DbSessionManager.USER}:{DbSessionManager.PASSWORD}@"
                           f"{DbSessionManager.IP_ADDR}/{DbSessionManager.DB_NAME}")
-        engine.connect()
+        return engine
 
+    @staticmethod
+    def create_db():
+        engine = DbSessionManager.create_engine()
+        if not database_exists(engine.url):
+            create_database(engine.url)
