@@ -1,5 +1,4 @@
-
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 
 from utils.orm_models.user_model import User
 
@@ -23,6 +22,8 @@ async def test_2():
 
 @app.post("/add-user/{user_name}")
 async def add_user(user_name):
+    if len(User.get_user_by_name(user_name)) > 0:
+        raise HTTPException(status_code=409, detail="This user already registered")
     User.add_user(user_name)
     user_id = User.get_user_by_name(user_name)[0].id
     return f"User: {user_name} added, id: {user_id}"
