@@ -20,3 +20,9 @@ class DbSessionManager:
         engine = DbSessionManager.create_engine()
         if not database_exists(engine.url):
             create_database(engine.url)
+        return engine
+
+    @staticmethod
+    def connect_db():
+        engine = DbSessionManager.create_db()
+        engine.connect()
