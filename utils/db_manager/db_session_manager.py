@@ -1,4 +1,5 @@
 from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 from sqlalchemy_utils import database_exists, create_database
 
 
@@ -25,4 +26,14 @@ class DbSessionManager:
     @staticmethod
     def connect_db():
         engine = DbSessionManager.create_db()
-        engine.connect()
+        db_session = sessionmaker()
+        db_session.configure(bind=engine)
+        session = db_session()
+        return session
+
+    @staticmethod
+    def add_entity(entity):
+        session = DbSessionManager.connect_db()
+        session.add(entity)
+        session.commit()
+        session.close()

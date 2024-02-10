@@ -1,16 +1,7 @@
-from typing import Union
 
 from fastapi import FastAPI
-from pydantic import BaseModel
-from starlette.responses import JSONResponse
 
-
-class Item(BaseModel):
-    name: str
-    description: Union[str, None] = None
-    price: float
-    tax: Union[float, None] = None
-
+from utils.orm_models.user_model import User
 
 app = FastAPI()
 
@@ -30,7 +21,9 @@ async def test_2():
     return {"message": "Test page 2"}
 
 
-@app.post("/add-user")
-async def create_item(item: Item, item_id: int):
-    
-    return JSONResponse({"item": item.dict(), "item_id": item_id})
+@app.post("/add-user/{user_name}")
+async def add_user(user_name):
+    User.add_user(user_name)
+    user_id = User.get_user_by_name(user_name)[0].id
+    return f"User: {user_name} added, id: {user_id}"
+
