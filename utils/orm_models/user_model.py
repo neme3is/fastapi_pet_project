@@ -11,15 +11,15 @@ class User(Base):
 
     id = sqlalchemy.Column(Integer, primary_key=True, autoincrement=True)
     name = sqlalchemy.Column(String)
+    password = sqlalchemy.Column(String)
 
     @staticmethod
-    def add_user(user_name: str):
-        DbSessionManager.add_entity(User(name=user_name))
+    def add_user(user_name: str, password: str):
+        DbSessionManager.add_entity(User(name=user_name, password=password))
 
     # todo move to common
     @staticmethod
     def get_user_by_name(user_name: str):
-        session = DbSessionManager.connect_db()
-        result = session.query(User).filter(User.name == user_name).all()
-        session.close()
+        DbSessionManager.connect_db()
+        result = DbSessionManager.connection.query(User).filter(User.name == user_name).all()
         return result

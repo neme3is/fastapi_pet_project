@@ -8,6 +8,7 @@ class DbSessionManager:
     PASSWORD = "1q2w3E4R"
     IP_ADDR = "127.0.0.1"
     DB_NAME = "fast_api_db"
+    connection = None
 
     @staticmethod
     def create_engine():
@@ -26,14 +27,14 @@ class DbSessionManager:
     @staticmethod
     def connect_db():
         engine = DbSessionManager.create_db()
-        db_session = sessionmaker()
-        db_session.configure(bind=engine)
-        session = db_session()
-        return session
+        if DbSessionManager.connection is None:
+            db_session = sessionmaker()
+            db_session.configure(bind=engine)
+            DbSessionManager.connection = db_session()
+
 
     @staticmethod
     def add_entity(entity):
-        session = DbSessionManager.connect_db()
-        session.add(entity)
-        session.commit()
-        session.close()
+        DbSessionManager.connect_db()
+        DbSessionManager.connection.add(entity)
+        DbSessionManager.connection.commit()

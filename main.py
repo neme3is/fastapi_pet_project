@@ -1,8 +1,9 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 from starlette import status
 from starlette.responses import JSONResponse
 
-from utils.orm_models.user_model import User
+from utils.api_models.user import User
+from utils.orm_models.user_model import User as UserOrmModel
 
 app = FastAPI()
 
@@ -22,11 +23,10 @@ async def test_2():
     return {"message": "Test page 2"}
 
 
-@app.post("/add-user/{user_name}")
-async def add_user(user_name):
-    if len(User.get_user_by_name(user_name)) > 0:
-        return JSONResponse(status_code=status.HTTP_409_CONFLICT, content=user_name)
-    User.add_user(user_name)
-    user_id = User.get_user_by_name(user_name)[0].id
-    return f"User: {user_name} added, id: {user_id}"
-
+@app.post("/add-user/")
+async def add_user(user: User):
+    if len(UserOrmModel.get_user_by_name(user.name)) > 0:
+        return JSONResponse(status_code=status.HTTP_409_CONFLICT, content=user.name)
+    UserOrmModel.add_user(user.name, user.password)
+    user_id = UserOrmModel.get_user_by_name(user.name)[0].id
+    return f"User: {user.name} added, id: {user_id}"
