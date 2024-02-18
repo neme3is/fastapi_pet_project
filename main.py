@@ -1,3 +1,4 @@
+import uvicorn
 from fastapi import FastAPI
 from starlette import status
 from starlette.responses import JSONResponse
@@ -30,3 +31,6 @@ async def add_user(user: User):
     UserOrmModel.add_user(user.name, user.password)
     user_id = UserOrmModel.get_user_by_name(user.name)[0].id
     return f"User: {user.name} added, id: {user_id}"
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="127.0.0.1", port=8000)
