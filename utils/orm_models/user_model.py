@@ -21,5 +21,11 @@ class User(Base):
     @staticmethod
     def get_user_by_name(user_name: str):
         DbSessionManager.connect_db()
-        result = DbSessionManager.connection.query(User).filter(User.name == user_name).all()
+        result = DbSessionManager.session.query(User).filter(User.name == user_name).all()
         return result
+
+    @staticmethod
+    def update_users_password(user_id, new_pass):
+        DbSessionManager.connect_db()
+        filtered_query = DbSessionManager.session.query(User).filter(User.id == user_id)
+        DbSessionManager.update(filtered_query, User.password, new_pass)

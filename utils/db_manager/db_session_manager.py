@@ -8,7 +8,7 @@ class DbSessionManager:
     PASSWORD = "1q2w3E4R"
     IP_ADDR = "127.0.0.1"
     DB_NAME = "fast_api_db"
-    connection = None
+    session = None
 
     @staticmethod
     def create_engine():
@@ -27,14 +27,28 @@ class DbSessionManager:
     @staticmethod
     def connect_db():
         engine = DbSessionManager.create_db()
-        if DbSessionManager.connection is None:
+        if DbSessionManager.session is None:
             db_session = sessionmaker()
             db_session.configure(bind=engine)
-            DbSessionManager.connection = db_session()
-
+            DbSessionManager.session = db_session()
 
     @staticmethod
     def add_entity(entity):
         DbSessionManager.connect_db()
-        DbSessionManager.connection.add(entity)
-        DbSessionManager.connection.commit()
+        DbSessionManager.session.add(entity)
+        DbSessionManager.session.commit()
+
+    @staticmethod
+    def query(table):
+        return DbSessionManager.session.query(table)
+
+    """
+    filtered_query = session.query(users_table).filter(users_table.c.id == 1)
+    updated_rows = filtered_query.update({users_table.c.age: 30})
+    """
+    @staticmethod
+    def update(filtered_query, column, value):
+        updated_rows = filtered_query.update({column: value})
+        DbSessionManager.session.commit()
+        return updated_rows
+
